@@ -4,7 +4,7 @@ import User from '../models/User.js';
 import * as dotenv from "dotenv";
 dotenv.config();
 
-//register 
+// register
 export const registerUser = async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -33,11 +33,29 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ error: 'Authentication failed' });
     }
 
-    // generation JWT-token
-    const token = jwt.sign({ userId: user._id, email: user.email }, 'does', { expiresIn: '30d' });
+    // Generation of JWT-token with expiresIn from .env
+    const token = jwt.sign({ userId: user._id, email: user.email }, process.env.SECRET_KEY, { expiresIn: process.env.JWT_EXPIRES_IN });
 
     res.status(200).json({ message: 'Authentication successful', token });
   } catch (error) {
-    res.status(500).json({ error: 'Authentication failed' });
+    res.status(500).json({ error: 'Authentication failed', });
+  }
+};
+
+// get Current User
+export const getCurrentUser = async (req, res) => {
+  const userId = req.userData.userId;
+
+  try {
+    const user = await User.findById(userId).exec();
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    //return info without password
+    const { username, email } = user;
+    res.status(200).json({ username, email });
+  } catch (err) {
+    res.status(500).json({ error: 'Error retrieving user data' });
   }
 };

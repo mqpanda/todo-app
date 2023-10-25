@@ -1,7 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
-import { registerUser, loginUser } from './controllers/UserController.js';
+import { registerUser, loginUser, getCurrentUser} from './controllers/UserController.js';
+import { checkAuth } from './middleware/authMiddleware.js'
 
 
 dotenv.config();
@@ -27,6 +28,9 @@ db.once('open', () => {
 
 app.post('/register', registerUser); 
 app.post('/login', loginUser); 
+app.get('/profile', checkAuth, getCurrentUser);
+
+
 
 // Starting server
 const PORT = process.env.PORT || 7000;
