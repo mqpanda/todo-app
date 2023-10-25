@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import { registerUser, loginUser, getCurrentUser} from './controllers/UserController.js';
 import { checkAuth } from './middleware/authMiddleware.js'
+import { createTodo, getAllTodos, updateTodo, removeTodo } from "./controllers/TodoController.js"; 
 
 
 dotenv.config();
@@ -29,6 +30,11 @@ db.once('open', () => {
 app.post('/register', registerUser); 
 app.post('/login', loginUser); 
 app.get('/profile', checkAuth, getCurrentUser);
+
+app.get('/todos', checkAuth, getAllTodos);
+app.post('/todos', checkAuth, createTodo); 
+app.put('/todos/:id', checkAuth, updateTodo); 
+app.delete('/todos/:id', checkAuth, removeTodo); 
 
 
 
