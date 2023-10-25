@@ -1,16 +1,15 @@
 import express from "express";
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
-import bcrypt from "bcrypt";
-import User from "./models/User.js";
+import { registerUser, loginUser } from './controllers/UserController.js';
+
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 7000;
 
+//DB connection 
 app.use(express.json());
-
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -26,20 +25,11 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
-app.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+app.post('/register', registerUser); 
+app.post('/login', loginUser); 
 
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, email, password: hashedPassword });
-    await user.save();
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Registration failed' });
-  }
-});
-
-
+// Starting server
+const PORT = process.env.PORT || 7000;
 
 app.listen(PORT, (err) => {
   if (err) {
