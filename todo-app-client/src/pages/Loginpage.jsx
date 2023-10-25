@@ -1,8 +1,9 @@
 import React from 'react';
-import { Form, Input, Button, message, Flex,  } from 'antd';
+import { Form, Input, Button, message, Flex, Typography } from 'antd';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
+const { Text } = Typography;
 
 const boxStyle = {
     margin: '200px 0 0 0',
@@ -35,7 +36,10 @@ const LoginPage = () => {
 
       <Flex style={boxStyle} justify={'center'} align={'center'}>
       <div>
-      <h2>Login</h2>
+      <Flex style={boxStyle} justify={'space-between'} align={'center'}>
+      <h2>Sign In</h2>
+      <Link to = "/register"><Text type="secondary">Sign up</Text></Link>
+      </Flex>
       <Form name="loginForm" onFinish={onFinish}>
       <Form.Item
       name="email" 
@@ -61,7 +65,7 @@ const LoginPage = () => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Log In
+            Sign In
           </Button>
         </Form.Item>
       </Form>
