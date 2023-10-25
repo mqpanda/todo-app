@@ -1,38 +1,38 @@
-{
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "node": true
-  },
-  "extends": "eslint:recommended",
-  "overrides": [],
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true 
-    }
-  },
-  "rules": {
-    "semi": "off",
-    "arrow-parens": "off",
-    "comma-dangle": "off",
-    "no-console": "off",
-    "require-jsdoc": "off",
-    "no-trailing-spaces": "off",
-    "indent": "off",
-    "no-debugger": "off",
-    "padded-blocks": "off",
-    "prefer-default-exports": "off",
-    "no-prototype-builtins": "off"
-  },
-  "settings": {
-    "import/resolver": {
-      "alias": {
-        "map": [["@", "./src"]]
-      },
-      "extensions": [".js"]
-    }
-  }
+// {
+//   "env": {
+//     "browser": true,
+//     "es2021": true,
+//     "node": true
+//   },
+//   "extends": "eslint:recommended",
+//   "overrides": [],
+//   "parserOptions": {
+//     "ecmaVersion": "latest",
+//     "sourceType": "module",
+//     "ecmaFeatures": {
+//       "jsx": true 
+//     }
+//   },
+//   "rules": {
+//     "semi": "off",
+//     "arrow-parens": "off",
+//     "comma-dangle": "off",
+//     "no-console": "off",
+//     "require-jsdoc": "off",
+//     "no-trailing-spaces": "off",
+//     "indent": "off",
+//     "no-debugger": "off",
+//     "padded-blocks": "off",
+//     "prefer-default-exports": "off",
+//     "no-prototype-builtins": "off"
+//   },
+//   "settings": {
+//     "import/resolver": {
+//       "alias": {
+//         "map": [["@", "./src"]]
+//       },
+//       "extensions": [".js"]
+//     }
+//   }
   
-}
+// }
