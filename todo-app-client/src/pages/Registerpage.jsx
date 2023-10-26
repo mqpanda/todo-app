@@ -1,32 +1,35 @@
-import React from 'react';
-import { Form, Input, Button, message, Flex, Typography } from 'antd';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import React from 'react'
+import { Form, Input, Button, message, Flex, Typography } from 'antd'
+import axios from 'axios'
+import { useNavigate, Link } from 'react-router-dom'
 
-const { Text } = Typography;
+const { Text } = Typography
 
 const boxStyle = {
   margin: '200px 0 0 0',
   width: '100%',
-  height: 120
-};
+  height: 120,
+}
 
 const RegisterPage = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const onFinish = async (values) => {
+  const onFinish = async values => {
     try {
-      const response = await axios.post('http://localhost:4444/register', values); // Send registration request
-      if (response.status === 201) { // Check for a successful registration status code
-        message.success('Registration successful. You can now sign in.');
-        navigate('/login'); // Redirect to login page
+      const response = await axios.post(
+        'http://localhost:4444/register',
+        values,
+      )
+      if (response.status === 201) {
+        message.success('Registration successful. You can now sign in.')
+        navigate('/login')
       } else {
-        message.error('Registration failed. Please check your information.');
+        message.error('Registration failed. Please check your information.')
       }
     } catch (error) {
-      message.error('An error occurred during registration. Please try again.');
+      message.error('An error occurred during registration. Please try again.')
     }
-  };
+  }
 
   return (
     <Flex gap="middle" align="start" vertical>
@@ -68,7 +71,9 @@ const RegisterPage = () => {
             <Form.Item
               name="password"
               label="Password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
+              rules={[
+                { required: true, message: 'Please input your password!' },
+              ]}
               className="custom-form-item"
             >
               <Input.Password />
@@ -82,7 +87,7 @@ const RegisterPage = () => {
         </div>
       </Flex>
     </Flex>
-  );
-};
+  )
+}
 
-export { RegisterPage };
+export { RegisterPage }

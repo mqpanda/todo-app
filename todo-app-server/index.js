@@ -3,13 +3,15 @@ import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import { registerUser, loginUser, getCurrentUser} from './controllers/UserController.js';
 import { checkAuth } from './middleware/authMiddleware.js'
-import { createTodo, getAllTodos, updateTodo, removeTodo } from "./controllers/TodoController.js"; 
+import { createTodo, getAllTodos, updateTodo, removeTodo } from "./controllers/TodoController.js";
+import cors from "cors"
 
 
 dotenv.config();
 
 const app = express();
 
+app.use(cors());
 //DB connection 
 app.use(express.json());
 mongoose.connect(process.env.MONGO_URL, {
