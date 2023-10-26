@@ -11,7 +11,7 @@ const boxStyle = {
   height: 120,
 }
 
-const LoginPage = ({ setIsAuthenticated, token }) => {
+const LoginPage = ({ setIsAuthenticated }) => {
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -20,19 +20,19 @@ const LoginPage = ({ setIsAuthenticated, token }) => {
       setIsAuthenticated(true)
       navigate('/todo')
     }
-  }, [])
+  }, [navigate, setIsAuthenticated])
 
   const onFinish = async values => {
     try {
-      const response = await axios.post('http://localhost:4444/login', values, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await axios.post('http://localhost:4444/login', values)
 
       if (response.status === 200) {
-        setIsAuthenticated(true)
+        const { token, userData } = response.data
+
         localStorage.setItem('token', token)
+        localStorage.setItem('userData', JSON.stringify(userData))
+
+        setIsAuthenticated(true)
         navigate('/todo')
       } else {
         message.error('Login failed. Please check your credentials.')

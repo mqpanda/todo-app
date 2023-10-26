@@ -6,14 +6,14 @@ import { HomePage } from './pages/Homepage'
 import { LoginPage } from './pages/Loginpage'
 import { RegisterPage } from './pages/Registerpage'
 import { NotFoundPage } from './pages/Notfoundpage'
-import { TodoPage } from './pages/Todopage'
+import { TodoPage } from './pages/TodoPage/Todopage'
 import AppHeader from './components/Header/Header'
+import ProfilePage from './pages/Profilepage'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const handleLogout = () => {
-    // Perform logout actions, e.g., clearing authentication status and token
     setIsAuthenticated(false)
     localStorage.removeItem('token')
   }
@@ -38,6 +38,7 @@ function App() {
             )
           }
         />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>

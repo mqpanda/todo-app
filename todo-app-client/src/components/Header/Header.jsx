@@ -2,7 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Flex, Layout, Menu, Button } from 'antd'
 import styles from './header.module.css'
-import Profile from '../Profile/Profile'
 
 const { Header } = Layout
 

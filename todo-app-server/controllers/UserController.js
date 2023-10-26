@@ -40,7 +40,16 @@ export const loginUser = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN },
     )
 
-    res.status(200).json({ message: 'Authentication successful', token })
+    // Include user data in the response
+    const userData = {
+      userId: user._id,
+      email: user.email,
+      username: user.username,
+    }
+
+    res
+      .status(200)
+      .json({ message: 'Authentication successful', token, userData })
   } catch (error) {
     res.status(500).json({ error: 'Authentication failed' })
   }
