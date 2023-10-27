@@ -9,11 +9,9 @@ const TodoList = ({ todos, onDelete, onUpdate, onToggleDone }) => {
         <div key={todo._id} className={styles.todoItem}>
           <Todo
             todo={todo}
-            onDelete={() => onDelete(todo._id)}
-            onUpdate={(title, description) =>
-              onUpdate(todo._id, title, description)
-            }
-            onToggleDone={() => onToggleDone(todo._id, !todo.done)} // Изменяем статус "Done" на противоположный
+            onDelete={onDelete}
+            onUpdate={onUpdate}
+            onToggleDone={onToggleDone}
           />
         </div>
       ))}

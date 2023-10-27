@@ -56,30 +56,6 @@ const TodoPage = ({ setIsAuthenticated }) => {
       })
   }
 
-  const handleUpdateTodo = (todoId, title, description) => {
-    const storedToken = localStorage.getItem('token')
-    axios
-      .put(
-        `http://localhost:4444/todos/${todoId}`,
-        { title, description },
-        {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        },
-      )
-      .then(response => {
-        setTodos(prevTodos => {
-          return prevTodos.map(todo =>
-            todo._id === todoId ? { ...todo, title, description } : todo,
-          )
-        })
-      })
-      .catch(error => {
-        console.error('Error updating todo:', error)
-      })
-  }
-
   const handleDeleteTodo = todoId => {
     const storedToken = localStorage.getItem('token')
     axios
@@ -96,6 +72,41 @@ const TodoPage = ({ setIsAuthenticated }) => {
       })
   }
 
+  const handleUpdateTodo = (todoId, updatedTodo) => {
+    const storedToken = localStorage.getItem('token')
+    console.log('Updating todo:', todoId, updatedTodo)
+
+    const requestData = {
+      title: updatedTodo.title,
+      description: updatedTodo.description,
+    }
+    console.log('Data being sent to the server:', requestData)
+
+    axios
+      .put(
+        `http://localhost:4444/todos/${todoId}`,
+        requestData, // Send the requestData object
+        {
+          headers: {
+            Authorization: `Bearer ${storedToken}`,
+          },
+        },
+      )
+      .then(response => {
+        console.log('Update response:', response)
+        if (response.status === 200) {
+          setTodos(prevTodos =>
+            prevTodos.map(todo =>
+              todo._id === todoId ? { ...todo, ...updatedTodo } : todo,
+            ),
+          )
+        }
+      })
+      .catch(error => {
+        console.error('Error updating todo:', error)
+      })
+  }
+
   const handleToggleDone = (todoId, isDone) => {
     const storedToken = localStorage.getItem('token')
     axios
@@ -109,21 +120,15 @@ const TodoPage = ({ setIsAuthenticated }) => {
         },
       )
       .then(response => {
-        setTodos(prevTodos => {
-          return prevTodos.map(todo =>
+        setTodos(prevTodos =>
+          prevTodos.map(todo =>
             todo._id === todoId ? { ...todo, done: isDone } : todo,
-          )
-        })
+          ),
+        )
       })
       .catch(error => {
         console.error('Error updating todo:', error)
       })
-  }
-
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-    localStorage.removeItem('token')
-    navigate('/login')
   }
 
   return (
