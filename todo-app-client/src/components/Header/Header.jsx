@@ -1,9 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Flex, Layout, Menu, Button } from 'antd'
-import styles from './header.module.css'
-
+import { Flex, Layout, Button } from 'antd'
 const { Header } = Layout
+import PropTypes from 'prop-types'
+import './header.module.css'
 
 const AppHeader = ({ isAuthenticated, onLogout }) => {
   return (
@@ -33,6 +33,11 @@ const AppHeader = ({ isAuthenticated, onLogout }) => {
       </Flex>
     </Header>
   )
+}
+
+AppHeader.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+  onLogout: PropTypes.func.isRequired,
 }
 
 export default AppHeader

@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Form, Input, Button, message, Flex, Typography } from 'antd'
 import axios from 'axios'
 import { useNavigate, Link } from 'react-router-dom'
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const { Text } = Typography
 
@@ -41,6 +43,10 @@ const LoginPage = ({ setIsAuthenticated }) => {
       console.error('Error:', error)
       message.error('An error occurred while logging in. Please try again.')
     }
+  }
+
+  LoginPage.propTypes = {
+    setIsAuthenticated: PropTypes.func.isRequired,
   }
 
   return (

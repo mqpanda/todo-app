@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Typography } from 'antd'
-
-const { Text } = Typography
 
 const ProfilePage = () => {
-  // State variable to store the retrieved user data
   const [userData, setUserData] = useState(null)
 
   useEffect(() => {

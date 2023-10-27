@@ -3,9 +3,9 @@ import { Button, Modal, Form, Input, Flex } from 'antd'
 import axios from 'axios'
 import TodoList from '../../components/Todo/TodoList'
 import { useNavigate } from 'react-router-dom'
-import styles from './Todopage.module.css'
+import './Todopage.module.css'
 
-const TodoPage = ({ setIsAuthenticated }) => {
+const TodoPage = () => {
   const [todos, setTodos] = useState([])
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [form] = Form.useForm()
@@ -23,7 +23,14 @@ const TodoPage = ({ setIsAuthenticated }) => {
           },
         })
         .then(response => {
-          setTodos(response.data)
+          const savedTodos = JSON.parse(localStorage.getItem('todos')) || []
+          const mergedTodos = response.data.map(todo => {
+            const savedTodo = savedTodos.find(
+              savedTodo => savedTodo._id === todo._id,
+            )
+            return savedTodo ? { ...todo, done: savedTodo.done } : todo
+          })
+          setTodos(mergedTodos)
         })
         .catch(error => {
           console.error('Error fetching todos:', error)
@@ -64,7 +71,7 @@ const TodoPage = ({ setIsAuthenticated }) => {
           Authorization: `Bearer ${storedToken}`,
         },
       })
-      .then(response => {
+      .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo._id !== todoId))
       })
       .catch(error => {
@@ -83,15 +90,11 @@ const TodoPage = ({ setIsAuthenticated }) => {
     console.log('Data being sent to the server:', requestData)
 
     axios
-      .put(
-        `http://localhost:4444/todos/${todoId}`,
-        requestData, // Send the requestData object
-        {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
+      .put(`http://localhost:4444/todos/${todoId}`, requestData, {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
         },
-      )
+      })
       .then(response => {
         console.log('Update response:', response)
         if (response.status === 200) {
@@ -109,6 +112,7 @@ const TodoPage = ({ setIsAuthenticated }) => {
 
   const handleToggleDone = (todoId, isDone) => {
     const storedToken = localStorage.getItem('token')
+
     axios
       .put(
         `http://localhost:4444/todos/${todoId}`,
@@ -119,12 +123,14 @@ const TodoPage = ({ setIsAuthenticated }) => {
           },
         },
       )
-      .then(response => {
-        setTodos(prevTodos =>
-          prevTodos.map(todo =>
+      .then(() => {
+        setTodos(prevTodos => {
+          const updatedTodos = prevTodos.map(todo =>
             todo._id === todoId ? { ...todo, done: isDone } : todo,
-          ),
-        )
+          )
+          localStorage.setItem('todos', JSON.stringify(updatedTodos))
+          return updatedTodos
+        })
       })
       .catch(error => {
         console.error('Error updating todo:', error)
