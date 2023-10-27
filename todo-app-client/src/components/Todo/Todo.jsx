@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, Button, Modal, Form, Input } from 'antd'
+import PropTypes from 'prop-types'
 
 const { Meta } = Card
 
 const Todo = ({ todo, onDelete, onUpdate, onToggleDone }) => {
-  const [isModalVisible, setIsModalVisible] = React.useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const [form] = Form.useForm()
+  const [updatedTodo, setUpdatedTodo] = useState(todo)
 
   const handleDelete = () => {
     onDelete(todo._id)
@@ -13,13 +15,17 @@ const Todo = ({ todo, onDelete, onUpdate, onToggleDone }) => {
 
   const handleUpdate = () => {
     setIsModalVisible(true)
+    form.setFieldsValue({
+      title: updatedTodo.title,
+      description: updatedTodo.description,
+    })
   }
 
-  const handleUpdateSubmit = () => {
-    form.validateFields().then(values => {
-      onUpdate(todo._id, values.title, values.description)
-      setIsModalVisible(false)
-    })
+  const handleUpdateSubmit = values => {
+    const updatedData = { ...updatedTodo, ...values }
+    onUpdate(todo._id, updatedData)
+    setIsModalVisible(false)
+    setUpdatedTodo(updatedData)
   }
 
   return (
@@ -30,44 +36,50 @@ const Todo = ({ todo, onDelete, onUpdate, onToggleDone }) => {
         backgroundColor: todo.done ? '#e1e1e1' : 'white',
       }}
       actions={[
-        <Button type="danger" onClick={handleDelete}>
+        <Button key="delete" type="danger" onClick={handleDelete}>
           Delete
         </Button>,
-        <Button type="secondary" onClick={handleUpdate}>
+        <Button key="update" type="danger" onClick={handleUpdate}>
           Update
         </Button>,
-        <Button type="primary" onClick={() => onToggleDone(todo._id)}>
+        <Button
+          key="toggleDone"
+          type="primary"
+          onClick={() => onToggleDone(todo._id)}
+        >
           {todo.done ? 'Undone' : 'Done'}
         </Button>,
       ]}
     >
-      <Meta title={todo.title} description={todo.description} />
+      <Meta title={updatedTodo.title} description={updatedTodo.description} />
       <Modal
         title="Update Todo"
         open={isModalVisible}
-        onOk={handleUpdateSubmit}
+        onOk={() => form.submit()}
         onCancel={() => setIsModalVisible(false)}
       >
-        <Form form={form}>
+        <Form form={form} onFinish={handleUpdateSubmit}>
           <Form.Item
             label="Title"
             name="title"
-            initialValue={todo.title}
             rules={[{ required: true, message: 'Please input the title!' }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            label="Description"
-            name="description"
-            initialValue={todo.description}
-          >
+          <Form.Item label="Description" name="description">
             <Input.TextArea />
           </Form.Item>
         </Form>
       </Modal>
     </Card>
   )
+}
+
+Todo.propTypes = {
+  todo: PropTypes.object.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
+  onToggleDone: PropTypes.func.isRequired,
 }
 
 export default Todo

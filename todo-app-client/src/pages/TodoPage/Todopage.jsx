@@ -3,9 +3,9 @@ import { Button, Modal, Form, Input, Flex } from 'antd'
 import axios from 'axios'
 import TodoList from '../../components/Todo/TodoList'
 import { useNavigate } from 'react-router-dom'
-import styles from './Todopage.module.css'
+import './Todopage.module.css'
 
-const TodoPage = ({ setIsAuthenticated }) => {
+const TodoPage = () => {
   const [todos, setTodos] = useState([])
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [form] = Form.useForm()
@@ -23,7 +23,14 @@ const TodoPage = ({ setIsAuthenticated }) => {
           },
         })
         .then(response => {
-          setTodos(response.data)
+          const savedTodos = JSON.parse(localStorage.getItem('todos')) || []
+          const mergedTodos = response.data.map(todo => {
+            const savedTodo = savedTodos.find(
+              savedTodo => savedTodo._id === todo._id,
+            )
+            return savedTodo ? { ...todo, done: savedTodo.done } : todo
+          })
+          setTodos(mergedTodos)
         })
         .catch(error => {
           console.error('Error fetching todos:', error)
@@ -56,30 +63,6 @@ const TodoPage = ({ setIsAuthenticated }) => {
       })
   }
 
-  const handleUpdateTodo = (todoId, title, description) => {
-    const storedToken = localStorage.getItem('token')
-    axios
-      .put(
-        `http://localhost:4444/todos/${todoId}`,
-        { title, description },
-        {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        },
-      )
-      .then(response => {
-        setTodos(prevTodos => {
-          return prevTodos.map(todo =>
-            todo._id === todoId ? { ...todo, title, description } : todo,
-          )
-        })
-      })
-      .catch(error => {
-        console.error('Error updating todo:', error)
-      })
-  }
-
   const handleDeleteTodo = todoId => {
     const storedToken = localStorage.getItem('token')
     axios
@@ -88,7 +71,7 @@ const TodoPage = ({ setIsAuthenticated }) => {
           Authorization: `Bearer ${storedToken}`,
         },
       })
-      .then(response => {
+      .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo._id !== todoId))
       })
       .catch(error => {
@@ -96,8 +79,40 @@ const TodoPage = ({ setIsAuthenticated }) => {
       })
   }
 
+  const handleUpdateTodo = (todoId, updatedTodo) => {
+    const storedToken = localStorage.getItem('token')
+    console.log('Updating todo:', todoId, updatedTodo)
+
+    const requestData = {
+      title: updatedTodo.title,
+      description: updatedTodo.description,
+    }
+    console.log('Data being sent to the server:', requestData)
+
+    axios
+      .put(`http://localhost:4444/todos/${todoId}`, requestData, {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+        },
+      })
+      .then(response => {
+        console.log('Update response:', response)
+        if (response.status === 200) {
+          setTodos(prevTodos =>
+            prevTodos.map(todo =>
+              todo._id === todoId ? { ...todo, ...updatedTodo } : todo,
+            ),
+          )
+        }
+      })
+      .catch(error => {
+        console.error('Error updating todo:', error)
+      })
+  }
+
   const handleToggleDone = (todoId, isDone) => {
     const storedToken = localStorage.getItem('token')
+
     axios
       .put(
         `http://localhost:4444/todos/${todoId}`,
@@ -108,22 +123,18 @@ const TodoPage = ({ setIsAuthenticated }) => {
           },
         },
       )
-      .then(response => {
+      .then(() => {
         setTodos(prevTodos => {
-          return prevTodos.map(todo =>
+          const updatedTodos = prevTodos.map(todo =>
             todo._id === todoId ? { ...todo, done: isDone } : todo,
           )
+          localStorage.setItem('todos', JSON.stringify(updatedTodos))
+          return updatedTodos
         })
       })
       .catch(error => {
         console.error('Error updating todo:', error)
       })
-  }
-
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-    localStorage.removeItem('token')
-    navigate('/login')
   }
 
   return (
