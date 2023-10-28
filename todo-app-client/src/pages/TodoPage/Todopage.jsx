@@ -18,22 +18,19 @@ const { TextArea } = Input
 const TodoPage = () => {
   const [todos, setTodos] = useState([])
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [editTodo, setEditTodo] = useState(null)
   const [form] = Form.useForm()
 
   useEffect(() => {
-    // Получите токен из локального хранилища
     const token = localStorage.getItem('token')
-
-    // Подготовьте конфигурацию для запроса, включая заголовок "Authorization"
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }
 
-    // Запрос к бэкенду для получения задач
     axios
-      .get('http://localhost:4444/todos', config) // Замените на правильный URL для вашего бэкенда
+      .get('http://localhost:4444/todos', config)
       .then(response => {
         setTodos(response.data)
       })
@@ -50,7 +47,6 @@ const TodoPage = () => {
       },
     }
 
-    // Include the `completed` field in the request payload
     const updatedTodo = {
       completed: true,
     }
@@ -58,7 +54,6 @@ const TodoPage = () => {
     axios
       .put(`http://localhost:4444/todos/${todoId}`, updatedTodo, config)
       .then(() => {
-        // Update the local state
         setTodos(prevTodos => {
           const updatedTodos = prevTodos.map(todo => {
             if (todo._id === todoId) {
@@ -82,7 +77,6 @@ const TodoPage = () => {
       },
     }
 
-    // Include the `completed` field in the request payload
     const updatedTodo = {
       completed: false,
     }
@@ -90,7 +84,6 @@ const TodoPage = () => {
     axios
       .put(`http://localhost:4444/todos/${todoId}`, updatedTodo, config)
       .then(() => {
-        // Update the local state
         setTodos(prevTodos => {
           const updatedTodos = prevTodos.map(todo => {
             if (todo._id === todoId) {
@@ -107,30 +100,25 @@ const TodoPage = () => {
   }
 
   const handleDeleteTodo = todoId => {
-    // Получите токен из локального хранилища
     const token = localStorage.getItem('token')
-
-    // Подготовьте конфигурацию для запроса, включая заголовок "Authorization" с токеном
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }
 
-    // Отправка DELETE-запроса на сервер для удаления задачи
     axios
-      .delete(`http://localhost:4444/todos/${todoId}`, config) // Замените на правильный URL для вашего бэкенда
+      .delete(`http://localhost:4444/todos/${todoId}`, config)
       .then(() => {
-        // Удалите задачу из списка после успешного удаления
         setTodos(prevTodos => {
           const updatedTodos = prevTodos.filter(item => item._id !== todoId)
           return updatedTodos
         })
-        message.success('Задача успешно удалена')
+        message.success('The task was successfully deleted')
       })
       .catch(error => {
         console.error('Failed to delete todo:', error)
-        message.error('Не удалось удалить задачу')
+        message.error('Failed to delete todo')
       })
   }
 
@@ -141,10 +129,8 @@ const TodoPage = () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields()
-      // Получите токен из локального хранилища
-      const token = localStorage.getItem('token')
 
-      // Подготовьте конфигурацию для запроса, включая заголовок "Authorization" с токеном
+      const token = localStorage.getItem('token')
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -156,17 +142,15 @@ const TodoPage = () => {
         description: values.description,
       }
 
-      // Отправка POST-запроса на сервер для создания задачи
       axios
-        .post('http://localhost:4444/todos', newTodo, config) // Замените на правильный URL для вашего бэкенда
+        .post('http://localhost:4444/todos', newTodo, config)
         .then(response => {
-          // Добавьте созданную задачу к списку задач
           setTodos([...todos, response.data])
-          message.success('Задача успешно создана')
+          message.success('Todo created successfully')
         })
         .catch(error => {
           console.error('Failed to create todo:', error)
-          message.error('Не удалось создать задачу')
+          message.error('Failed to create todo')
         })
     } catch (errorInfo) {
       console.error('Failed:', errorInfo)
@@ -179,14 +163,66 @@ const TodoPage = () => {
     setIsModalVisible(false)
   }
 
+  const handleEdit = async () => {
+    try {
+      const values = await form.validateFields()
+
+      const updatedTodo = {
+        title: values.title,
+        description: values.description,
+      }
+
+      const token = localStorage.getItem('token')
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+
+      axios
+        .put(`http://localhost:4444/todos/${editTodo._id}`, updatedTodo, config)
+        .then(() => {
+          setTodos(prevTodos => {
+            const updatedTodos = prevTodos.map(todo => {
+              if (todo._id === editTodo._id) {
+                return {
+                  ...todo,
+                  title: values.title,
+                  description: values.description,
+                }
+              }
+              return todo
+            })
+            return updatedTodos
+          })
+
+          setEditTodo(null)
+        })
+        .catch(error => {
+          console.error('Failed to edit todo:', error)
+        })
+    } catch (errorInfo) {
+      console.error('Failed:', errorInfo)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditTodo(null)
+  }
+
   return (
     <div style={{ padding: '20px' }}>
-      <Title level={2}>Список задач</Title>
-      <Button type="primary" onClick={showModal}>
-        Создать задачу
+      <Title level={2}>TODO List</Title>
+      <Button
+        type="primary"
+        onClick={showModal}
+        style={{ marginBottom: '16px' }}
+      >
+        Create todo
       </Button>
+
       <Modal
-        title="Создать задачу"
+        title="Create todo"
         open={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -194,15 +230,39 @@ const TodoPage = () => {
         <Form form={form} name="createTodoForm">
           <Form.Item
             name="title"
-            label="Заголовок"
-            rules={[{ required: true, message: 'Введите заголовок' }]}
+            label="title"
+            rules={[{ required: true, message: 'Enter title' }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="description"
-            label="Описание"
-            rules={[{ required: true, message: 'Введите описание' }]}
+            label="description"
+            rules={[{ required: true, message: 'Enter title' }]}
+          >
+            <TextArea rows={4} />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="Edit todo"
+        open={editTodo !== null}
+        onOk={handleEdit}
+        onCancel={handleCancelEdit}
+      >
+        <Form form={form} name="editTodoForm">
+          <Form.Item
+            name="title"
+            label="Title"
+            rules={[{ required: true, message: 'Enter title' }]}
+            initialValue={editTodo ? editTodo.title : ''}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label="description"
+            initialValue={editTodo ? editTodo.description : ''}
           >
             <TextArea rows={4} />
           </Form.Item>
@@ -221,35 +281,46 @@ const TodoPage = () => {
         dataSource={todos}
         renderItem={todo => (
           <List.Item>
-            <Card title={todo.title} style={{}}>
+            <Card title={todo.title}>
               <Text>{todo.description}</Text>
-              <div
-                style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
-              >
-                <div style={{ marginTop: 'auto' }}>
-                  <Popconfirm
-                    title="Вы уверены, что хотите удалить эту задачу?"
-                    onConfirm={() => handleDeleteTodo(todo._id)}
-                    okText="Да"
-                    cancelText="Нет"
-                  >
-                    <Button type="danger">Удалить</Button>
-                  </Popconfirm>
-                  <Text type={todo.completed ? 'success' : 'danger'}>
-                    {todo.completed ? 'Завершено: Да' : 'Завершено: Нет'}
-                  </Text>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                {editTodo === todo ? (
+                  <Button type="primary" onClick={handleEdit}>
+                    Save
+                  </Button>
+                ) : (
                   <Button
-                    type="primary"
+                    type="danger"
                     onClick={() =>
-                      todo.completed
-                        ? handleUncompleteTodo(todo._id)
-                        : handleCompleteTodo(todo._id)
+                      editTodo === todo ? handleEdit : setEditTodo(todo)
                     }
                   >
-                    {todo.completed ? 'Отменить' : 'Завершить'}
+                    {editTodo === todo ? 'Save' : 'Edit'}
                   </Button>
-                </div>
+                )}
+
+                <Popconfirm
+                  title="Are you sure you want to delete this task?"
+                  onConfirm={() => handleDeleteTodo(todo._id)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button type="danger">Delete</Button>
+                </Popconfirm>
+                <Button
+                  type="primary"
+                  onClick={() =>
+                    todo.completed
+                      ? handleUncompleteTodo(todo._id)
+                      : handleCompleteTodo(todo._id)
+                  }
+                >
+                  {todo.completed ? 'Undone' : 'Done'}
+                </Button>
               </div>
+              <Text type={todo.completed ? 'success' : 'danger'}>
+                {todo.completed ? 'Completed: Yes' : 'Completed: No'}
+              </Text>
             </Card>
           </List.Item>
         )}

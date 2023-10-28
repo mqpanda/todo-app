@@ -44,7 +44,6 @@ const LoginPage = ({ setIsAuthenticated }) => {
     }
   }
 
-  // Валидация для email (проверка формата email)
   const validateEmail = (rule, value) => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
     if (!value || emailPattern.test(value)) {
@@ -53,7 +52,6 @@ const LoginPage = ({ setIsAuthenticated }) => {
     return Promise.reject('Please enter a valid email address.')
   }
 
-  // Валидация для пароля (проверка минимальной длины)
   const validatePassword = (rule, value) => {
     if (value && value.length >= 6) {
       return Promise.resolve()
@@ -86,7 +84,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
                     message: 'Please input your email!',
                   },
                   {
-                    validator: validateEmail, // Валидация формата email
+                    validator: validateEmail,
                   },
                 ]}
                 className="custom-form-item"
@@ -100,7 +98,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
                 rules={[
                   { required: true, message: 'Please input your password!' },
                   {
-                    validator: validatePassword, // Валидация длины пароля
+                    validator: validatePassword,
                   },
                 ]}
                 className="custom-form-item"
