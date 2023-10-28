@@ -281,8 +281,12 @@ const TodoPage = () => {
         dataSource={todos}
         renderItem={todo => (
           <List.Item>
-            <Card title={todo.title}>
-              <Text>{todo.description}</Text>
+            <Card
+              title={todo.title}
+              style={{ textAlign: 'center' }} // Центрируем контент внутри карточки
+            >
+              <Text style={{ textAlign: 'center' }}>{todo.description}</Text>{' '}
+              {/* Центрируем текст внутри карточки */}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 {editTodo === todo ? (
                   <Button type="primary" onClick={handleEdit}>
