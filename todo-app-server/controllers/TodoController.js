@@ -18,6 +18,7 @@ export const createTodo = async (req, res) => {
       title,
       description,
       user: userId,
+      completed: false, // Устанавливаем состояние выполнения в false
     })
 
     await todo.save()
@@ -54,6 +55,7 @@ export const updateTodo = async (req, res) => {
     const updatedTodo = {
       title: req.body.title,
       description: req.body.description,
+      completed: req.body.completed, // Состояние выполнения задачи
     }
 
     const todo = await Todo.findByIdAndUpdate(todoId, updatedTodo, {
