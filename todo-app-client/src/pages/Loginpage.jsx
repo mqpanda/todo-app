@@ -3,9 +3,8 @@ import { Form, Input, Button, message, Flex, Typography } from 'antd'
 import axios from 'axios'
 import { useNavigate, Link } from 'react-router-dom'
 import React from 'react'
-import PropTypes from 'prop-types'
-
 const { Text } = Typography
+import PropTypes from 'prop-types'
 
 const boxStyle = {
   margin: '200px 0 0 0',
@@ -45,6 +44,23 @@ const LoginPage = ({ setIsAuthenticated }) => {
     }
   }
 
+  // Валидация для email (проверка формата email)
+  const validateEmail = (rule, value) => {
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+    if (!value || emailPattern.test(value)) {
+      return Promise.resolve()
+    }
+    return Promise.reject('Please enter a valid email address.')
+  }
+
+  // Валидация для пароля (проверка минимальной длины)
+  const validatePassword = (rule, value) => {
+    if (value && value.length >= 6) {
+      return Promise.resolve()
+    }
+    return Promise.reject('Password must be at least 6 characters.')
+  }
+
   LoginPage.propTypes = {
     setIsAuthenticated: PropTypes.func.isRequired,
   }
@@ -69,6 +85,9 @@ const LoginPage = ({ setIsAuthenticated }) => {
                     required: true,
                     message: 'Please input your email!',
                   },
+                  {
+                    validator: validateEmail, // Валидация формата email
+                  },
                 ]}
                 className="custom-form-item"
               >
@@ -80,6 +99,9 @@ const LoginPage = ({ setIsAuthenticated }) => {
                 label="Password"
                 rules={[
                   { required: true, message: 'Please input your password!' },
+                  {
+                    validator: validatePassword, // Валидация длины пароля
+                  },
                 ]}
                 className="custom-form-item"
               >

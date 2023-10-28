@@ -50,6 +50,10 @@ const RegisterPage = () => {
                   required: true,
                   message: 'Please input your username!',
                 },
+                {
+                  min: 3,
+                  message: 'Username must be at least 3 characters.',
+                },
               ]}
               className="custom-form-item"
             >
@@ -63,6 +67,10 @@ const RegisterPage = () => {
                   required: true,
                   message: 'Please input your email!',
                 },
+                {
+                  type: 'email',
+                  message: 'Please enter a valid email address.',
+                },
               ]}
               className="custom-form-item"
             >
@@ -73,6 +81,7 @@ const RegisterPage = () => {
               label="Password"
               rules={[
                 { required: true, message: 'Please input your password!' },
+                { min: 6, message: 'Password must be at least 6 characters.' },
               ]}
               className="custom-form-item"
             >
